@@ -1,20 +1,22 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { ThemeProvider } from './src/context/ThemeContext';
+import { RecipeProvider } from './src/context/RecipeContext';
+import AppNavigator from './src/navigation/AppNavigator';
+
+import { ErrorProvider } from './src/context/ErrorContext';
+import ErrorPopup from './src/components/ErrorPopup';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ThemeProvider>
+      <ErrorProvider>
+        <RecipeProvider>
+          <AppNavigator />
+          <ErrorPopup />
+          <StatusBar style="auto" />
+        </RecipeProvider>
+      </ErrorProvider>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
