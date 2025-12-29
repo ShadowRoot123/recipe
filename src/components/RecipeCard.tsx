@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Recipe } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { Image } from 'expo-image';
 
 interface RecipeCardProps {
     recipe: Recipe;
@@ -17,7 +18,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onPress }) => {
             onPress={onPress}
             activeOpacity={0.8}
         >
-            <Image source={{ uri: recipe.strMealThumb }} style={styles.image} />
+            <Image source={{ uri: recipe.strMealThumb }} style={styles.image} cachePolicy="memory-disk" />
             <View style={styles.info}>
                 <Text style={[styles.title, { color: theme.colors.text }]} numberOfLines={1}>
                     {recipe.strMeal}

@@ -9,11 +9,15 @@ import SearchScreen from '../screens/SearchScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
+import LoginScreen from '../screens/LoginScreen';
+import SignUpScreen from '../screens/SignUpScreen';
 import { useTheme } from '../context/ThemeContext';
 
 export type RootStackParamList = {
     Main: undefined;
     Details: { recipeId: string };
+    Login: undefined;
+    SignUp: undefined;
 };
 
 export type TabParamList = {
@@ -97,6 +101,16 @@ const AppNavigator = () => {
                     name="Details"
                     component={RecipeDetailScreen}
                     options={{ title: 'Recipe Details' }}
+                />
+                <Stack.Screen
+                    name="Login"
+                    component={LoginScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="SignUp"
+                    component={SignUpScreen}
+                    options={{ headerShown: false }}
                 />
             </Stack.Navigator>
         </NavigationContainer>
