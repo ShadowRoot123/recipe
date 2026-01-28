@@ -1,0 +1,122 @@
+{
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "favorites": "Favorites",
+    "shoppingList": "Shopping List",
+    "settings": "Settings",
+    "recipeDetails": "Recipe Details"
+  },
+  "common": {
+    "success": "Success",
+    "error": "Error",
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "clearAll": "Clear All",
+    "close": "Close",
+    "from": "From:",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "settings": {
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "english": "English",
+    "amharic": "Amharic",
+    "loggedInAs": "Logged in as: {{email}}",
+    "logout": "Logout",
+    "login": "Login",
+    "loginToRate": "Log in to rate recipes and add comments.",
+    "logoutSuccess": "Logged out successfully",
+    "logoutFailed": "Failed to log out"
+  },
+  "home": {
+    "filters": "Filters",
+    "category": "Category",
+    "area": "Area",
+    "mainIngredient": "Main Ingredient",
+    "resetFilters": "Reset Filters",
+    "recommendedForYou": "Recommended for You",
+    "allRecipes": "All Recipes",
+    "filteredResults": "Filtered Results",
+    "errors": {
+      "fetchRecipes": "Failed to fetch recipes. Please check your connection."
+    }
+  },
+  "search": {
+    "placeholder": "Search recipes...",
+    "noResults": "No results found",
+    "errors": {
+      "searchFailed": "Failed to search recipes. Please try again."
+    }
+  },
+  "favorites": {
+    "empty": "No favorites yet. Start exploring!"
+  },
+  "shopping": {
+    "title": "Shopping List",
+    "clearListTitle": "Clear List",
+    "clearListMessage": "Are you sure you want to clear your shopping list?",
+    "empty": "Your shopping list is empty."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "button": "Login",
+      "missingFields": "Please enter both email and password",
+      "errorTitle": "Login Error",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up"
+    },
+    "signup": {
+      "title": "Create Account",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "confirmPasswordPlaceholder": "Confirm Password",
+      "button": "Sign Up",
+      "fillAllFields": "Please fill in all fields",
+      "passwordsMismatch": "Passwords do not match",
+      "successTitle": "Success",
+      "successMessage": "Account created successfully!",
+      "errorTitle": "Sign Up Error",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Login"
+    }
+  },
+  "details": {
+    "recipeNotFound": "Recipe not found",
+    "watchOnYoutube": "Watch on YouTube",
+    "ingredients": "Ingredients",
+    "servings": "Servings: {{count}}",
+    "addToList": "Add to List",
+    "addToListSuccessMessage": "Ingredients added to shopping list",
+    "tags": "Tags",
+    "instructions": "Instructions",
+    "startCooking": "Start Cooking",
+    "noInstructions": "No instructions available for this recipe.",
+    "errors": {
+      "loadDetails": "Failed to load recipe details."
+    },
+    "reviewsTitle": "Reviews ({{count}})",
+    "addReview": "Add a Review",
+    "writeComment": "Write your comment...",
+    "submitReview": "Submit Review",
+    "loginToAddReview": "Log in to add a review",
+    "alerts": {
+      "ratingRequired": "Please select a rating",
+      "commentRequired": "Please enter a comment",
+      "nothingToAddMessage": "No ingredients found for this recipe.",
+      "mustBeLoggedInToReview": "You must be logged in to review",
+      "reviewAddedMessage": "Review added successfully",
+      "timerDoneTitle": "Timer Done!",
+      "timerDoneMessage": "Time is up!"
+    },
+    "step": {
+      "title": "Step {{current}} of {{total}}",
+      "stop": "Stop",
+      "startTimer": "Start Timer ({{minutes}} min)"
+    }
+  }
+}

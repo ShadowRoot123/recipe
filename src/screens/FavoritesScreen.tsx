@@ -7,6 +7,7 @@ import { useRecipes } from '../context/RecipeContext';
 import RecipeCard from '../components/RecipeCard';
 import { useTheme } from '../context/ThemeContext';
 import { RootStackParamList, TabParamList } from '../navigation/AppNavigator';
+import { useTranslation } from 'react-i18next';
 
 type FavoritesScreenNavigationProp = CompositeNavigationProp<
     BottomTabNavigationProp<TabParamList, 'Favorites'>,
@@ -17,6 +18,7 @@ const FavoritesScreen = () => {
     const { favorites } = useRecipes();
     const { theme } = useTheme();
     const navigation = useNavigation<FavoritesScreenNavigationProp>();
+    const { t } = useTranslation();
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -32,7 +34,7 @@ const FavoritesScreen = () => {
                 contentContainerStyle={styles.list}
                 ListEmptyComponent={
                     <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
-                        No favorites yet. Start exploring!
+                        {t('favorites.empty')}
                     </Text>
                 }
             />

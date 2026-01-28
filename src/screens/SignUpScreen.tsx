@@ -6,6 +6,7 @@ import { auth } from '../services/firebaseConfig';
 import { useTheme } from '../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useTranslation } from 'react-i18next';
 
 type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
@@ -16,25 +17,26 @@ const SignUpScreen = () => {
     const [loading, setLoading] = useState(false);
     const { theme } = useTheme();
     const navigation = useNavigation<SignUpScreenNavigationProp>();
+    const { t } = useTranslation();
 
     const handleSignUp = async () => {
         if (!email || !password || !confirmPassword) {
-            Alert.alert('Error', 'Please fill in all fields');
+            Alert.alert(t('common.error'), t('auth.signup.fillAllFields'));
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
+            Alert.alert(t('common.error'), t('auth.signup.passwordsMismatch'));
             return;
         }
 
         setLoading(true);
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            Alert.alert('Success', 'Account created successfully!');
+            Alert.alert(t('auth.signup.successTitle'), t('auth.signup.successMessage'));
             // Navigation will be handled by the auth state listener in AppNavigator or similar
         } catch (error: any) {
-            Alert.alert('Sign Up Error', error.message);
+            Alert.alert(t('auth.signup.errorTitle'), error.message);
         } finally {
             setLoading(false);
         }
@@ -42,7 +44,7 @@ const SignUpScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.title, { color: theme.colors.primary }]}>Create Account</Text>
+            <Text style={[styles.title, { color: theme.colors.primary }]}>{t('auth.signup.title')}</Text>
 
             <View style={styles.inputContainer}>
                 <TextInput
@@ -51,7 +53,7 @@ const SignUpScreen = () => {
                         color: theme.colors.text,
                         borderColor: theme.colors.border
                     }]}
-                    placeholder="Email"
+                    placeholder={t('auth.signup.emailPlaceholder')}
                     placeholderTextColor={theme.colors.textSecondary}
                     value={email}
                     onChangeText={setEmail}
@@ -64,7 +66,7 @@ const SignUpScreen = () => {
                         color: theme.colors.text,
                         borderColor: theme.colors.border
                     }]}
-                    placeholder="Password"
+                    placeholder={t('auth.signup.passwordPlaceholder')}
                     placeholderTextColor={theme.colors.textSecondary}
                     value={password}
                     onChangeText={setPassword}
@@ -76,7 +78,7 @@ const SignUpScreen = () => {
                         color: theme.colors.text,
                         borderColor: theme.colors.border
                     }]}
-                    placeholder="Confirm Password"
+                    placeholder={t('auth.signup.confirmPasswordPlaceholder')}
                     placeholderTextColor={theme.colors.textSecondary}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -92,7 +94,7 @@ const SignUpScreen = () => {
                 {loading ? (
                     <ActivityIndicator color="#FFF" />
                 ) : (
-                    <Text style={styles.buttonText}>Sign Up</Text>
+                    <Text style={styles.buttonText}>{t('auth.signup.button')}</Text>
                 )}
             </TouchableOpacity>
 
@@ -101,7 +103,8 @@ const SignUpScreen = () => {
                 onPress={() => navigation.navigate('Login')}
             >
                 <Text style={[styles.linkText, { color: theme.colors.textSecondary }]}>
-                    Already have an account? <Text style={{ color: theme.colors.primary }}>Login</Text>
+                    {t('auth.signup.alreadyHaveAccount')}{' '}
+                    <Text style={{ color: theme.colors.primary }}>{t('auth.signup.login')}</Text>
                 </Text>
             </TouchableOpacity>
         </View>

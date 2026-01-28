@@ -87,3 +87,47 @@ export async function getRecipeById(idMeal: string): Promise<Recipe> {
   }
   return buildRecipe(meal, true);
 }
+
+export async function getAllIngredients(): Promise<string[]> {
+  return ingredients.map(i => i.name).sort();
+}
+
+export async function getAllAreas(): Promise<string[]> {
+  const areas = Array.from(new Set(meals.map(m => m.area).filter(Boolean)));
+  return areas.sort();
+}
+
+export async function getRecipesByFilter(
+  category?: string | null,
+  area?: string | null,
+  ingredient?: string | null
+): Promise<Recipe[]> {
+  let filteredMeals = meals;
+
+  if (category && category !== 'All') {
+    filteredMeals = filteredMeals.filter(m => m.category === category);
+  }
+
+  if (area && area !== 'All') {
+    filteredMeals = filteredMeals.filter(m => m.area === area);
+  }
+
+  if (ingredient && ingredient !== 'All') {
+    // Find ingredient ID
+    const ingObj = ingredients.find(i => i.name === ingredient);
+    if (ingObj) {
+      // Find all meal IDs that have this ingredient
+      const mealIds = new Set(
+        mealIngredients
+          .filter(mi => mi.ingredient_id === ingObj.id)
+          .map(mi => mi.meal_external_id)
+      );
+      filteredMeals = filteredMeals.filter(m => mealIds.has(m.external_id));
+    } else {
+      // Ingredient not found, return empty
+      return [];
+    }
+  }
+
+  return filteredMeals.map(m => buildRecipe(m, false));
+}

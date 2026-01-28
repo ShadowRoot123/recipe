@@ -7,6 +7,7 @@ import { searchRecipes, Recipe } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
 import { useTheme } from '../context/ThemeContext';
 import { RootStackParamList, TabParamList } from '../navigation/AppNavigator';
+import { useTranslation } from 'react-i18next';
 
 type SearchScreenNavigationProp = CompositeNavigationProp<
     BottomTabNavigationProp<TabParamList, 'Search'>,
@@ -22,6 +23,7 @@ const SearchScreen = () => {
     const { theme } = useTheme();
     const { showError } = useError();
     const navigation = useNavigation<SearchScreenNavigationProp>();
+    const { t } = useTranslation();
 
     const handleSearch = async () => {
         if (!query.trim()) return;
@@ -30,7 +32,7 @@ const SearchScreen = () => {
             const data = await searchRecipes(query);
             setResults(data);
         } catch (error) {
-            showError('Failed to search recipes. Please try again.');
+            showError(t('search.errors.searchFailed'));
             setResults([]);
         } finally {
             setLoading(false);
@@ -42,7 +44,7 @@ const SearchScreen = () => {
             <View style={[styles.searchContainer, { backgroundColor: theme.colors.card }]}>
                 <TextInput
                     style={[styles.input, { color: theme.colors.text }]}
-                    placeholder="Search recipes..."
+                    placeholder={t('search.placeholder')}
                     placeholderTextColor={theme.colors.textSecondary}
                     value={query}
                     onChangeText={setQuery}
@@ -65,7 +67,7 @@ const SearchScreen = () => {
                     contentContainerStyle={styles.list}
                     ListEmptyComponent={
                         !loading && query ? (
-                            <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>No results found</Text>
+                            <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>{t('search.noResults')}</Text>
                         ) : null
                     }
                 />

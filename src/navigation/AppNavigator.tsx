@@ -3,10 +3,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
+import ShoppingListScreen from '../screens/ShoppingListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -24,6 +26,7 @@ export type TabParamList = {
     Home: undefined;
     Search: undefined;
     Favorites: undefined;
+    ShoppingList: undefined;
     Settings: undefined;
 };
 
@@ -32,6 +35,7 @@ const Tab = createBottomTabNavigator<TabParamList>();
 
 const TabNavigator = () => {
     const { theme } = useTheme();
+    const { t } = useTranslation();
 
     return (
         <Tab.Navigator
@@ -45,6 +49,8 @@ const TabNavigator = () => {
                         iconName = focused ? 'search' : 'search-outline';
                     } else if (route.name === 'Favorites') {
                         iconName = focused ? 'heart' : 'heart-outline';
+                    } else if (route.name === 'ShoppingList') {
+                        iconName = focused ? 'cart' : 'cart-outline';
                     } else {
                         iconName = focused ? 'settings' : 'settings-outline';
                     }
@@ -63,16 +69,38 @@ const TabNavigator = () => {
                 headerTintColor: theme.colors.text,
             })}
         >
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Search" component={SearchScreen} />
-            <Tab.Screen name="Favorites" component={FavoritesScreen} />
-            <Tab.Screen name="Settings" component={SettingsScreen} />
+            <Tab.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{ title: t('nav.home'), tabBarLabel: t('nav.home') }}
+            />
+            <Tab.Screen
+                name="Search"
+                component={SearchScreen}
+                options={{ title: t('nav.search'), tabBarLabel: t('nav.search') }}
+            />
+            <Tab.Screen
+                name="Favorites"
+                component={FavoritesScreen}
+                options={{ title: t('nav.favorites'), tabBarLabel: t('nav.favorites') }}
+            />
+            <Tab.Screen
+                name="ShoppingList"
+                component={ShoppingListScreen}
+                options={{ title: t('nav.shoppingList'), tabBarLabel: t('nav.shoppingList') }}
+            />
+            <Tab.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{ title: t('nav.settings'), tabBarLabel: t('nav.settings') }}
+            />
         </Tab.Navigator>
     );
 };
 
 const AppNavigator = () => {
     const { theme, isDark } = useTheme();
+    const { t } = useTranslation();
 
     return (
         <NavigationContainer theme={{
@@ -90,7 +118,6 @@ const AppNavigator = () => {
             <Stack.Navigator screenOptions={{
                 headerStyle: { backgroundColor: theme.colors.card },
                 headerTintColor: theme.colors.text,
-                headerBackTitleVisible: false,
             }}>
                 <Stack.Screen
                     name="Main"
@@ -100,7 +127,7 @@ const AppNavigator = () => {
                 <Stack.Screen
                     name="Details"
                     component={RecipeDetailScreen}
-                    options={{ title: 'Recipe Details' }}
+                    options={{ title: t('nav.recipeDetails') }}
                 />
                 <Stack.Screen
                     name="Login"

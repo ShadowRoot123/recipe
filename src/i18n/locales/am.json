@@ -1,0 +1,122 @@
+{
+  "nav": {
+    "home": "መነሻ",
+    "search": "ፈልግ",
+    "favorites": "ተወዳጆች",
+    "shoppingList": "የግዢ ዝርዝር",
+    "settings": "ቅንብሮች",
+    "recipeDetails": "የምግብ ዝርዝር"
+  },
+  "common": {
+    "success": "ተሳክቷል",
+    "error": "ስህተት",
+    "cancel": "ሰርዝ",
+    "clear": "አጥፋ",
+    "clearAll": "ሁሉንም አጥፋ",
+    "close": "ዝጋ",
+    "from": "ከ:",
+    "previous": "የቀድሞ",
+    "next": "ቀጣይ"
+  },
+  "settings": {
+    "darkMode": "ጨለማ ሞድ",
+    "language": "ቋንቋ",
+    "english": "እንግሊዝኛ",
+    "amharic": "አማርኛ",
+    "loggedInAs": "ገብተዋል፦ {{email}}",
+    "logout": "ውጣ",
+    "login": "ግባ",
+    "loginToRate": "ሬሲፒዎችን ለመመዘን እና አስተያየት ለመጨመር ግባ።",
+    "logoutSuccess": "በተሳካ ሁኔታ ወጥተዋል",
+    "logoutFailed": "መውጣት አልተሳካም"
+  },
+  "home": {
+    "filters": "ማጣሪያዎች",
+    "category": "ምድብ",
+    "area": "አካባቢ",
+    "mainIngredient": "ዋና ንጥረ ነገር",
+    "resetFilters": "ማጣሪያዎችን ዳግም አስጀምር",
+    "recommendedForYou": "ለእርስዎ የተመከሩ",
+    "allRecipes": "ሁሉም ሬሲፒዎች",
+    "filteredResults": "የተጣሩ ውጤቶች",
+    "errors": {
+      "fetchRecipes": "ሬሲፒዎችን ማግኘት አልተሳካም። ግንኙነትዎን ያረጋግጡ።"
+    }
+  },
+  "search": {
+    "placeholder": "ሬሲፒዎችን ፈልግ...",
+    "noResults": "ውጤት አልተገኘም",
+    "errors": {
+      "searchFailed": "ሬሲፒዎችን መፈለግ አልተሳካም። እንደገና ይሞክሩ።"
+    }
+  },
+  "favorites": {
+    "empty": "አሁን ተወዳጅ የለም። መፈለግ ጀምሩ!"
+  },
+  "shopping": {
+    "title": "የግዢ ዝርዝር",
+    "clearListTitle": "ዝርዝሩን አጥፋ",
+    "clearListMessage": "የግዢ ዝርዝርዎን ሁሉንም ማጥፋት ይፈልጋሉ?",
+    "empty": "የግዢ ዝርዝርዎ ባዶ ነው።"
+  },
+  "auth": {
+    "login": {
+      "title": "እንኳን ደህና መጡ",
+      "emailPlaceholder": "ኢሜይል",
+      "passwordPlaceholder": "የይለፍ ቃል",
+      "button": "ግባ",
+      "missingFields": "እባክዎ ኢሜይል እና የይለፍ ቃል ያስገቡ",
+      "errorTitle": "የመግቢያ ስህተት",
+      "noAccount": "መለያ የለዎትም?",
+      "signUp": "መመዝገብ"
+    },
+    "signup": {
+      "title": "መለያ ፍጠር",
+      "emailPlaceholder": "ኢሜይል",
+      "passwordPlaceholder": "የይለፍ ቃል",
+      "confirmPasswordPlaceholder": "የይለፍ ቃል ያረጋግጡ",
+      "button": "መመዝገብ",
+      "fillAllFields": "እባክዎ ሁሉንም መስኮች ይሙሉ",
+      "passwordsMismatch": "የይለፍ ቃሎች አይዛመዱም",
+      "successTitle": "ተሳክቷል",
+      "successMessage": "መለያ በተሳካ ሁኔታ ተፈጥሯል!",
+      "errorTitle": "የመመዝገቢያ ስህተት",
+      "alreadyHaveAccount": "መለያ አለዎት?",
+      "login": "ግባ"
+    }
+  },
+  "details": {
+    "recipeNotFound": "ሬሲፒ አልተገኘም",
+    "watchOnYoutube": "በYouTube ላይ ይመልከቱ",
+    "ingredients": "ንጥረ ነገሮች",
+    "servings": "አገልግሎት: {{count}}",
+    "addToList": "ወደ ዝርዝር ጨምር",
+    "addToListSuccessMessage": "ንጥረ ነገሮች ወደ የግዢ ዝርዝር ታክለዋል",
+    "tags": "መለያዎች",
+    "instructions": "መመሪያዎች",
+    "startCooking": "ምግብ ጀምር",
+    "noInstructions": "ለዚህ ሬሲፒ መመሪያ አልተገኘም።",
+    "errors": {
+      "loadDetails": "የሬሲፒ ዝርዝር መጫን አልተሳካም።"
+    },
+    "reviewsTitle": "ግምገማዎች ({{count}})",
+    "addReview": "ግምገማ ጨምር",
+    "writeComment": "አስተያየትዎን ይጻፉ...",
+    "submitReview": "ግምገማ ላክ",
+    "loginToAddReview": "ግምገማ ለመጨመር ግባ",
+    "alerts": {
+      "ratingRequired": "እባክዎ ደረጃ ይምረጡ",
+      "commentRequired": "እባክዎ አስተያየት ያስገቡ",
+      "nothingToAddMessage": "ለዚህ ሬሲፒ ንጥረ ነገሮች አልተገኙም።",
+      "mustBeLoggedInToReview": "ግምገማ ለመስጠት መግባት ያስፈልጋል",
+      "reviewAddedMessage": "ግምገማ በተሳካ ሁኔታ ተጨምሯል",
+      "timerDoneTitle": "ሰዓት ተጠናቀቀ!",
+      "timerDoneMessage": "ጊዜው አበቃ!"
+    },
+    "step": {
+      "title": "ደረጃ {{current}} / {{total}}",
+      "stop": "አቁም",
+      "startTimer": "ሰዓት ጀምር ({{minutes}} ደቂቃ)"
+    }
+  }
+}

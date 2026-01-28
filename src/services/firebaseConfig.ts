@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
+// import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
+// import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -15,9 +16,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Auth with persistence
-const auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-});
+// Initialize Auth
+// Note: Persistence might need adjustment for Firebase v12+
+const auth = getAuth(app);
+// const auth = initializeAuth(app, {
+//     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+// });
 
 export { auth };

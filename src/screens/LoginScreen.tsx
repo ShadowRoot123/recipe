@@ -6,6 +6,7 @@ import { auth } from '../services/firebaseConfig';
 import { useTheme } from '../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useTranslation } from 'react-i18next';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -15,10 +16,11 @@ const LoginScreen = () => {
     const [loading, setLoading] = useState(false);
     const { theme } = useTheme();
     const navigation = useNavigation<LoginScreenNavigationProp>();
+    const { t } = useTranslation();
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please enter both email and password');
+            Alert.alert(t('common.error'), t('auth.login.missingFields'));
             return;
         }
 
@@ -26,7 +28,7 @@ const LoginScreen = () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
         } catch (error: any) {
-            Alert.alert('Login Error', error.message);
+            Alert.alert(t('auth.login.errorTitle'), error.message);
         } finally {
             setLoading(false);
         }
@@ -34,7 +36,7 @@ const LoginScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.title, { color: theme.colors.primary }]}>Welcome Back</Text>
+            <Text style={[styles.title, { color: theme.colors.primary }]}>{t('auth.login.title')}</Text>
 
             <View style={styles.inputContainer}>
                 <TextInput
@@ -43,7 +45,7 @@ const LoginScreen = () => {
                         color: theme.colors.text,
                         borderColor: theme.colors.border
                     }]}
-                    placeholder="Email"
+                    placeholder={t('auth.login.emailPlaceholder')}
                     placeholderTextColor={theme.colors.textSecondary}
                     value={email}
                     onChangeText={setEmail}
@@ -56,7 +58,7 @@ const LoginScreen = () => {
                         color: theme.colors.text,
                         borderColor: theme.colors.border
                     }]}
-                    placeholder="Password"
+                    placeholder={t('auth.login.passwordPlaceholder')}
                     placeholderTextColor={theme.colors.textSecondary}
                     value={password}
                     onChangeText={setPassword}
@@ -72,7 +74,7 @@ const LoginScreen = () => {
                 {loading ? (
                     <ActivityIndicator color="#FFF" />
                 ) : (
-                    <Text style={styles.buttonText}>Login</Text>
+                    <Text style={styles.buttonText}>{t('auth.login.button')}</Text>
                 )}
             </TouchableOpacity>
 
@@ -81,7 +83,8 @@ const LoginScreen = () => {
                 onPress={() => navigation.navigate('SignUp')}
             >
                 <Text style={[styles.linkText, { color: theme.colors.textSecondary }]}>
-                    Don't have an account? <Text style={{ color: theme.colors.primary }}>Sign Up</Text>
+                    {t('auth.login.noAccount')}{' '}
+                    <Text style={{ color: theme.colors.primary }}>{t('auth.login.signUp')}</Text>
                 </Text>
             </TouchableOpacity>
         </View>
