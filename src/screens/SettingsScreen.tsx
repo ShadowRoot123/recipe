@@ -80,6 +80,15 @@ const SettingsScreen = () => {
                 </View>
             </View>
 
+            <TouchableOpacity
+                style={[styles.option, { borderBottomColor: theme.colors.border }]}
+                onPress={() => navigation.navigate('Preferences')}
+                activeOpacity={0.8}
+            >
+                <Text style={[styles.text, { color: theme.colors.text }]}>{t('settings.foodPreferences')}</Text>
+                <Text style={[styles.linkText, { color: theme.colors.primary }]}>{t('common.edit')}</Text>
+            </TouchableOpacity>
+
             {user ? (
                 <View style={styles.authContainer}>
                     <Text style={[styles.emailText, { color: theme.colors.text }]}>
@@ -159,6 +168,10 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#FFF',
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    linkText: {
+        fontSize: 14,
         fontWeight: 'bold',
     },
 });

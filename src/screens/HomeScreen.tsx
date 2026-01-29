@@ -3,10 +3,11 @@ import { View, FlatList, ActivityIndicator, StyleSheet, Text, TouchableOpacity, 
 import { useNavigation, CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { getRecipes, getRecipesByFilter, getAllAreas, getAllIngredients, Recipe } from '../services/api';
+import { getRecipes, getRecipesByFilter, getAllAreas, getAllIngredients, Recipe, filterRecipesByPreferences } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
 import { useTheme } from '../context/ThemeContext';
 import { useError } from '../context/ErrorContext';
+import { usePreferences } from '../context/PreferencesContext';
 import { RootStackParamList, TabParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -33,6 +34,7 @@ const HomeScreen = () => {
 
     const { theme } = useTheme();
     const { showError } = useError();
+    const { preferences } = usePreferences();
     const navigation = useNavigation<HomeScreenNavigationProp>();
     const { t } = useTranslation();
 
@@ -66,15 +68,17 @@ const HomeScreen = () => {
         setLoading(true);
         try {
             const data = await getRecipesByFilter(selectedCategory, selectedArea, selectedIngredient);
-            setRecipes(data);
+            const filteredByPrefs = filterRecipesByPreferences(data, preferences as any);
+            setRecipes(filteredByPrefs);
             
             // Generate recommendations if filtering is active or just shuffle some
-            if (data.length > 0) {
-                const shuffled = [...data].sort(() => 0.5 - Math.random());
+            if (filteredByPrefs.length > 0) {
+                const shuffled = [...filteredByPrefs].sort(() => 0.5 - Math.random());
                 setRecommendedRecipes(shuffled.slice(0, 5));
             } else {
                  const all = await getRecipes();
-                 const shuffled = [...all].sort(() => 0.5 - Math.random());
+                 const allFiltered = filterRecipesByPreferences(all, preferences as any);
+                 const shuffled = [...allFiltered].sort(() => 0.5 - Math.random());
                  setRecommendedRecipes(shuffled.slice(0, 5));
             }
         } catch (error) {

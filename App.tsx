@@ -8,6 +8,7 @@ import { ReviewProvider } from './src/context/ReviewContext';
 import { ShoppingListProvider } from './src/context/ShoppingListContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import { LocaleProvider } from './src/context/LocaleContext';
+import { PreferencesProvider } from './src/context/PreferencesContext';
 
 import { ErrorProvider } from './src/context/ErrorContext';
 import ErrorPopup from './src/components/ErrorPopup';
@@ -19,13 +20,15 @@ export default function App() {
         <AuthProvider>
           <ReviewProvider>
             <ErrorProvider>
-              <RecipeProvider>
-                <ShoppingListProvider>
-                  <AppNavigator />
-                  <ErrorPopup />
-                  <StatusBar style="auto" />
-                </ShoppingListProvider>
-              </RecipeProvider>
+              <PreferencesProvider>
+                <RecipeProvider>
+                  <ShoppingListProvider>
+                    <AppNavigator />
+                    <ErrorPopup />
+                    <StatusBar style="auto" />
+                  </ShoppingListProvider>
+                </RecipeProvider>
+              </PreferencesProvider>
             </ErrorProvider>
           </ReviewProvider>
         </AuthProvider>

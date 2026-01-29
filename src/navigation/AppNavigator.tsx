@@ -14,12 +14,28 @@ import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import { useTheme } from '../context/ThemeContext';
+import BootScreen from '../screens/BootScreen';
+import PreferencesScreen from '../screens/PreferencesScreen';
+import WelcomeIntroScreen from '../screens/onboarding/WelcomeIntroScreen';
+import WelcomeAllergiesScreen from '../screens/onboarding/WelcomeAllergiesScreen';
+import WelcomePreferencesScreen from '../screens/onboarding/WelcomePreferencesScreen';
+import WelcomeFinishScreen from '../screens/onboarding/WelcomeFinishScreen';
 
 export type RootStackParamList = {
+    Boot: undefined;
+    Onboarding: undefined;
     Main: undefined;
     Details: { recipeId: string };
+    Preferences: undefined;
     Login: undefined;
     SignUp: undefined;
+};
+
+export type OnboardingStackParamList = {
+    WelcomeIntro: undefined;
+    WelcomeAllergies: undefined;
+    WelcomePreferences: undefined;
+    WelcomeFinish: undefined;
 };
 
 export type TabParamList = {
@@ -31,7 +47,24 @@ export type TabParamList = {
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+const OnboardingStack = createStackNavigator<OnboardingStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
+
+const OnboardingNavigator = () => {
+    const { theme } = useTheme();
+
+    return (
+        <OnboardingStack.Navigator screenOptions={{
+            headerStyle: { backgroundColor: theme.colors.card },
+            headerTintColor: theme.colors.text,
+        }}>
+            <OnboardingStack.Screen name="WelcomeIntro" component={WelcomeIntroScreen} options={{ headerShown: false }} />
+            <OnboardingStack.Screen name="WelcomeAllergies" component={WelcomeAllergiesScreen} options={{ title: 'Allergies' }} />
+            <OnboardingStack.Screen name="WelcomePreferences" component={WelcomePreferencesScreen} options={{ title: 'Preferences' }} />
+            <OnboardingStack.Screen name="WelcomeFinish" component={WelcomeFinishScreen} options={{ headerShown: false }} />
+        </OnboardingStack.Navigator>
+    );
+};
 
 const TabNavigator = () => {
     const { theme } = useTheme();
@@ -119,6 +152,8 @@ const AppNavigator = () => {
                 headerStyle: { backgroundColor: theme.colors.card },
                 headerTintColor: theme.colors.text,
             }}>
+                <Stack.Screen name="Boot" component={BootScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Onboarding" component={OnboardingNavigator} options={{ headerShown: false }} />
                 <Stack.Screen
                     name="Main"
                     component={TabNavigator}
@@ -128,6 +163,11 @@ const AppNavigator = () => {
                     name="Details"
                     component={RecipeDetailScreen}
                     options={{ title: t('nav.recipeDetails') }}
+                />
+                <Stack.Screen
+                    name="Preferences"
+                    component={PreferencesScreen}
+                    options={{ title: t('settings.foodPreferences') }}
                 />
                 <Stack.Screen
                     name="Login"

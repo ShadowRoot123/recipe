@@ -2,6 +2,7 @@
 import mealsData from '../jsons/meals.json';
 import mealIngredientsData from '../jsons/meal_ingredients.json';
 import ingredientsData from '../jsons/ingredients.json';
+import { ALLERGEN_KEYWORDS, type AllergenId } from '../constants/allergens';
 
 export interface Recipe {
   idMeal: string;
@@ -42,6 +43,18 @@ const ingredients: IngredientRaw[] = ingredientsData as unknown as IngredientRaw
 const ingredientNameById = new Map<number, string>();
 ingredients.forEach((i) => ingredientNameById.set(i.id, i.name));
 
+const normalize = (value: string) => value.trim().toLowerCase();
+
+const ingredientNamesLowerByMealId = new Map<number, string[]>();
+mealIngredients.forEach((mi) => {
+  const name = ingredientNameById.get(mi.ingredient_id);
+  if (!name) return;
+  const mealId = mi.meal_external_id;
+  const list = ingredientNamesLowerByMealId.get(mealId) ?? [];
+  list.push(normalize(name));
+  ingredientNamesLowerByMealId.set(mealId, list);
+});
+
 function buildRecipe(meal: MealRaw, includeIngredients = false): Recipe {
   const recipe: Recipe = {
     idMeal: String(meal.external_id),
@@ -66,6 +79,59 @@ function buildRecipe(meal: MealRaw, includeIngredients = false): Recipe {
   }
 
   return recipe;
+}
+
+export type RecipePreferences = {
+  allergens?: AllergenId[];
+  excludedIngredients?: string[];
+  preferredCategories?: string[];
+  preferredAreas?: string[];
+};
+
+const containsAnyKeyword = (haystack: string, keywords: string[]) => {
+  for (const keyword of keywords) {
+    if (!keyword) continue;
+    if (haystack.includes(keyword)) return true;
+  }
+  return false;
+};
+
+export function filterRecipesByPreferences(recipes: Recipe[], preferences?: RecipePreferences | null): Recipe[] {
+  if (!preferences) return recipes;
+
+  const preferredCategories = preferences.preferredCategories ?? [];
+  const preferredAreas = preferences.preferredAreas ?? [];
+  const excludedIngredients = preferences.excludedIngredients ?? [];
+  const allergens = preferences.allergens ?? [];
+
+  let filtered = recipes;
+
+  if (preferredCategories.length > 0) {
+    const preferredSet = new Set(preferredCategories);
+    filtered = filtered.filter((r) => preferredSet.has(r.strCategory));
+  }
+
+  if (preferredAreas.length > 0) {
+    const preferredSet = new Set(preferredAreas);
+    filtered = filtered.filter((r) => preferredSet.has(r.strArea));
+  }
+
+  const excludedSet = new Set(excludedIngredients.map(normalize));
+  const allergyKeywords = allergens.flatMap((a) => ALLERGEN_KEYWORDS[a] ?? []).map(normalize);
+
+  if (excludedSet.size === 0 && allergyKeywords.length === 0) return filtered;
+
+  return filtered.filter((r) => {
+    const mealId = Number(r.idMeal);
+    const ingredientNames = ingredientNamesLowerByMealId.get(mealId) ?? [];
+
+    for (const name of ingredientNames) {
+      if (excludedSet.has(name)) return false;
+      if (allergyKeywords.length > 0 && containsAnyKeyword(name, allergyKeywords)) return false;
+    }
+
+    return true;
+  });
 }
 
 export async function getRecipes(): Promise<Recipe[]> {
