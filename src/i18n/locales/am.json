@@ -30,7 +30,8 @@
     "login": "ግባ",
     "loginToRate": "ሬሲፒዎችን ለመመዘን እና አስተያየት ለመጨመር ግባ።",
     "logoutSuccess": "በተሳካ ሁኔታ ወጥተዋል",
-    "logoutFailed": "መውጣት አልተሳካም"
+    "logoutFailed": "መውጣት አልተሳካም",
+    "signup": "መመዝገብ"
   },
   "home": {
     "filters": "ማጣሪያዎች",

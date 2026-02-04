@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
+import { AuthService } from '../services/authService';
 import { useTheme } from '../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -26,9 +25,17 @@ const LoginScreen = () => {
 
         setLoading(true);
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            await AuthService.login(email, password);
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Boot' }],
+            });
         } catch (error: any) {
-            Alert.alert(t('auth.login.errorTitle'), error.message);
+            if (error.code === 'auth/invalid-api-key') {
+                Alert.alert('Configuration Error', 'Firebase API Key is invalid. Please check firebaseConfig.ts');
+            } else {
+                Alert.alert(t('auth.login.errorTitle'), error.message);
+            }
         } finally {
             setLoading(false);
         }

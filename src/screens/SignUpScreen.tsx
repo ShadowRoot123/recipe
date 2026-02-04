@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
+import { AuthService } from '../services/authService';
 import { useTheme } from '../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -32,9 +31,18 @@ const SignUpScreen = () => {
 
         setLoading(true);
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            Alert.alert(t('auth.signup.successTitle'), t('auth.signup.successMessage'));
-            // Navigation will be handled by the auth state listener in AppNavigator or similar
+            await AuthService.register(email, password);
+            Alert.alert(t('auth.signup.successTitle'), t('auth.signup.successMessage'), [
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Boot' }],
+                        });
+                    }
+                }
+            ]);
         } catch (error: any) {
             Alert.alert(t('auth.signup.errorTitle'), error.message);
         } finally {

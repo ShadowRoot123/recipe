@@ -106,12 +106,26 @@ const SettingsScreen = () => {
                     <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>
                         {t('settings.loginToRate')}
                     </Text>
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: theme.colors.primary }]}
-                        onPress={() => navigation.navigate('Login')}
-                    >
-                        <Text style={styles.buttonText}>{t('settings.login')}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.authButtons}>
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: theme.colors.primary }]}
+                            onPress={() => navigation.navigate('Login')}
+                        >
+                            <Text style={styles.buttonText}>{t('settings.login')}</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.button, {
+                                backgroundColor: 'transparent',
+                                borderWidth: 1,
+                                borderColor: theme.colors.primary,
+                                marginTop: 12
+                            }]}
+                            onPress={() => navigation.navigate('SignUp')}
+                        >
+                            <Text style={[styles.buttonText, { color: theme.colors.primary }]}>{t('settings.signup')}</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             )}
         </View>
@@ -149,6 +163,10 @@ const styles = StyleSheet.create({
     },
     authContainer: {
         marginTop: 32,
+        alignItems: 'center',
+    },
+    authButtons: {
+        width: '100%',
         alignItems: 'center',
     },
     emailText: {
