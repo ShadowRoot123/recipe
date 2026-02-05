@@ -27,7 +27,7 @@ const RecipeDetailScreen = () => {
     const { isFavorite, addFavorite, removeFavorite } = useRecipes();
     const { addItems } = useShoppingList();
     const { user } = useAuth();
-    const { reviews, addReview, getReviewsByRecipeId } = useReviews();
+    const { reviews, loadReviews, addReview, getReviewsByRecipeId } = useReviews();
     const navigation = useNavigation<RecipeDetailNavigationProp>();
     const { t } = useTranslation();
 
@@ -47,6 +47,10 @@ const RecipeDetailScreen = () => {
     useEffect(() => {
         fetchDetails();
     }, [recipeId]);
+
+    useEffect(() => {
+        loadReviews(recipeId).catch(() => { });
+    }, [loadReviews, recipeId]);
 
     useEffect(() => {
         return () => {
@@ -81,7 +85,7 @@ const RecipeDetailScreen = () => {
         }
     };
 
-    const handleSubmitReview = () => {
+    const handleSubmitReview = async () => {
         if (rating === 0) {
             Alert.alert(t('common.error'), t('details.alerts.ratingRequired'));
             return;
@@ -95,17 +99,20 @@ const RecipeDetailScreen = () => {
             return;
         }
 
-        addReview({
-            recipeId,
-            userId: user.uid,
-            userEmail: user.email || 'Anonymous',
-            rating,
-            comment,
-        });
-
-        setRating(0);
-        setComment('');
-        Alert.alert(t('common.success'), t('details.alerts.reviewAddedMessage'));
+        try {
+            await addReview({
+                recipeId,
+                userId: user.id,
+                userEmail: user.email || 'Anonymous',
+                rating,
+                comment,
+            });
+            setRating(0);
+            setComment('');
+            Alert.alert(t('common.success'), t('details.alerts.reviewAddedMessage'));
+        } catch {
+            Alert.alert(t('common.error'), t('details.errors.loadDetails'));
+        }
     };
 
     if (loading) {

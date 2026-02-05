@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
 import { useTheme } from '../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -17,6 +16,7 @@ const LoginScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<LoginScreenNavigationProp>();
     const { t } = useTranslation();
+    const { signIn } = useAuth();
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -26,7 +26,8 @@ const LoginScreen = () => {
 
         setLoading(true);
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            await signIn(email, password);
+            navigation.goBack();
         } catch (error: any) {
             Alert.alert(t('auth.login.errorTitle'), error.message);
         } finally {

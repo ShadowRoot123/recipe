@@ -1,16 +1,22 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { onAuthStateChanged, User, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
+import React, { createContext, useEffect, useContext, useMemo, useState, ReactNode } from 'react';
+import type { Session, User } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
 
 interface AuthContextType {
     user: User | null;
+    session: Session | null;
     loading: boolean;
+    signIn: (email: string, password: string) => Promise<void>;
+    signUp: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
+    session: null,
     loading: true,
+    signIn: async () => { },
+    signUp: async () => { },
     signOut: async () => { },
 });
 
@@ -22,27 +28,56 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+        let isMounted = true;
+
+        supabase.auth.getSession().then(({ data, error }) => {
+            if (!isMounted) return;
+            if (error) {
+                setLoading(false);
+                return;
+            }
+            setSession(data.session ?? null);
+            setUser(data.session?.user ?? null);
             setLoading(false);
         });
 
-        return unsubscribe;
+        const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+            setSession(nextSession);
+            setUser(nextSession?.user ?? null);
+            setLoading(false);
+        });
+
+        return () => {
+            isMounted = false;
+            data.subscription.unsubscribe();
+        };
     }, []);
 
-    const signOut = async () => {
-        try {
-            await firebaseSignOut(auth);
-        } catch (error) {
-            console.error("Error signing out: ", error);
-        }
-    };
+    const value = useMemo<AuthContextType>(() => {
+        const signIn = async (email: string, password: string) => {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+        };
+
+        const signUp = async (email: string, password: string) => {
+            const { error } = await supabase.auth.signUp({ email, password });
+            if (error) throw error;
+        };
+
+        const signOut = async () => {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+        };
+
+        return { user, session, loading, signIn, signUp, signOut };
+    }, [loading, session, user]);
 
     return (
-        <AuthContext.Provider value={{ user, loading, signOut }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

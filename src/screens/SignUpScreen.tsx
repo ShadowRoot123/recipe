@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
 import { useTheme } from '../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
@@ -18,6 +17,7 @@ const SignUpScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<SignUpScreenNavigationProp>();
     const { t } = useTranslation();
+    const { signUp } = useAuth();
 
     const handleSignUp = async () => {
         if (!email || !password || !confirmPassword) {
@@ -32,9 +32,9 @@ const SignUpScreen = () => {
 
         setLoading(true);
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            await signUp(email, password);
             Alert.alert(t('auth.signup.successTitle'), t('auth.signup.successMessage'));
-            // Navigation will be handled by the auth state listener in AppNavigator or similar
+            navigation.goBack();
         } catch (error: any) {
             Alert.alert(t('auth.signup.errorTitle'), error.message);
         } finally {

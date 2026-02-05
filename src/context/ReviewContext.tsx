@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useCallback, useMemo, useState, useContext, ReactNode } from 'react';
+import { fetchMealComments, fetchMealRatings, upsertMealComment, upsertMealRating } from '../services/supabaseReviews';
 
 export interface Review {
     id: string;
@@ -12,13 +13,15 @@ export interface Review {
 
 interface ReviewContextType {
     reviews: Review[];
-    addReview: (review: Omit<Review, 'id' | 'date'>) => void;
+    loadReviews: (recipeId: string) => Promise<void>;
+    addReview: (review: Omit<Review, 'id' | 'date'>) => Promise<void>;
     getReviewsByRecipeId: (recipeId: string) => Review[];
 }
 
 const ReviewContext = createContext<ReviewContextType>({
     reviews: [],
-    addReview: () => { },
+    loadReviews: async () => { },
+    addReview: async () => { },
     getReviewsByRecipeId: () => [],
 });
 
@@ -29,23 +32,53 @@ interface ReviewProviderProps {
 }
 
 export const ReviewProvider: React.FC<ReviewProviderProps> = ({ children }) => {
-    const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviewsByRecipeId, setReviewsByRecipeId] = useState<Record<string, Review[]>>({});
 
-    const addReview = (reviewData: Omit<Review, 'id' | 'date'>) => {
-        const newReview: Review = {
-            ...reviewData,
-            id: Math.random().toString(36).substr(2, 9),
-            date: new Date().toISOString(),
-        };
-        setReviews((prev) => [newReview, ...prev]);
-    };
+    const loadReviews = useCallback(async (recipeId: string) => {
+        const [comments, ratings] = await Promise.all([
+            fetchMealComments(recipeId),
+            fetchMealRatings(recipeId),
+        ]);
 
-    const getReviewsByRecipeId = (recipeId: string) => {
-        return reviews.filter((r) => r.recipeId === recipeId);
-    };
+        const ratingByUserId = new Map<string, number>();
+        for (const r of ratings) {
+            ratingByUserId.set(r.user_id, r.rating);
+        }
+
+        const mapped: Review[] = comments.map((c) => {
+            const profile = Array.isArray(c.profiles) ? c.profiles[0] : c.profiles;
+
+            return {
+                id: c.id,
+                recipeId: c.meal_id,
+                userId: c.user_id,
+                userEmail: profile?.display_name?.trim() || 'Anonymous',
+                rating: ratingByUserId.get(c.user_id) ?? 0,
+                comment: c.body,
+                date: c.created_at,
+            };
+        });
+
+        setReviewsByRecipeId((prev) => ({ ...prev, [recipeId]: mapped }));
+    }, []);
+
+    const addReview = useCallback(async (reviewData: Omit<Review, 'id' | 'date'>) => {
+        await Promise.all([
+            upsertMealRating(reviewData.recipeId, reviewData.userId, reviewData.rating),
+            upsertMealComment(reviewData.recipeId, reviewData.userId, reviewData.comment),
+        ]);
+
+        await loadReviews(reviewData.recipeId);
+    }, [loadReviews]);
+
+    const getReviewsByRecipeId = useCallback((recipeId: string) => {
+        return reviewsByRecipeId[recipeId] ?? [];
+    }, [reviewsByRecipeId]);
+
+    const reviews = useMemo(() => Object.values(reviewsByRecipeId).flat(), [reviewsByRecipeId]);
 
     return (
-        <ReviewContext.Provider value={{ reviews, addReview, getReviewsByRecipeId }}>
+        <ReviewContext.Provider value={{ reviews, loadReviews, addReview, getReviewsByRecipeId }}>
             {children}
         </ReviewContext.Provider>
     );
