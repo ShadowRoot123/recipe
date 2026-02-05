@@ -3,14 +3,16 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import { usePreferences } from '../context/PreferencesContext';
+import { useAuth } from '../context/AuthContext';
 
 const BootScreen = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
   const { isLoading, hasCompletedOnboarding } = usePreferences();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || authLoading) return;
 
     const target = hasCompletedOnboarding ? 'Main' : 'Onboarding';
     navigation.dispatch(
@@ -19,7 +21,7 @@ const BootScreen = () => {
         routes: [{ name: target }],
       })
     );
-  }, [isLoading, hasCompletedOnboarding, navigation]);
+  }, [isLoading, authLoading, hasCompletedOnboarding, navigation]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>

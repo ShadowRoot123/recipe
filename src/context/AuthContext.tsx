@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useContext, useMemo, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
 
@@ -34,9 +34,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     useEffect(() => {
         let isMounted = true;
 
+        // Get initial session
         supabase.auth.getSession().then(({ data, error }) => {
             if (!isMounted) return;
             if (error) {
+                console.error('Error fetching session:', error);
                 setLoading(false);
                 return;
             }
@@ -45,7 +47,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setLoading(false);
         });
 
+        // Listen for auth changes
         const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+            if (!isMounted) return;
             setSession(nextSession);
             setUser(nextSession?.user ?? null);
             setLoading(false);
@@ -74,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
 
         return { user, session, loading, signIn, signUp, signOut };
-    }, [loading, session, user]);
+    }, [user, session, loading]);
 
     return (
         <AuthContext.Provider value={value}>
