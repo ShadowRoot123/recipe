@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Recipe } from '../services/api';
+import type { Recipe } from '../services/api';
 
 interface RecipeContextType {
     favorites: Recipe[];

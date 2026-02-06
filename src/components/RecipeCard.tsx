@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Recipe } from '../services/api';
+import type { Recipe } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { Image } from 'expo-image';
 

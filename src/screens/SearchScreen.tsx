@@ -3,7 +3,8 @@ import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text, Touchab
 import { useNavigation, CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { filterRecipesByPreferences, getAllAreas, getAllIngredients, getRecipes, getRecipesByFilter, Recipe } from '../services/api';
+import { filterRecipesByPreferences, getAllAreas, getAllIngredients, getRecipes, getRecipesByFilter } from '../services/supabaseRecipes';
+import type { Recipe } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
 import { useTheme } from '../context/ThemeContext';
 import { usePreferences } from '../context/PreferencesContext';

@@ -103,6 +103,10 @@
       "loadDetails": "የሬሲፒ ዝርዝር መጫን አልተሳካም።"
     },
     "reviewsTitle": "ግምገማዎች ({{count}})",
+    "basedOnReviews": "በ {{count}} ግምገማ ላይ የተመሠረተ",
+    "basedOnReviews_other": "በ {{count}} ግምገማዎች ላይ የተመሠረተ",
+    "noReviewsYet": "እስካሁን ምንም ግምገማዎች የሉም",
+    "beTheFirstToReview": "ይህንን ሬሲፒ የመጀመሪያው ግምገማ ይስጡ!",
     "addReview": "ግምገማ ጨምር",
     "writeComment": "አስተያየትዎን ይጻፉ...",
     "submitReview": "ግምገማ ላክ",

@@ -15,15 +15,15 @@ export type MealCommentRow = {
   created_at: string;
   updated_at: string;
   profiles?:
-    | {
-        display_name: string | null;
-        avatar_url: string | null;
-      }
-    | {
-        display_name: string | null;
-        avatar_url: string | null;
-      }[]
-    | null;
+  | {
+    display_name: string | null;
+    avatar_url: string | null;
+  }
+  | {
+    display_name: string | null;
+    avatar_url: string | null;
+  }[]
+  | null;
 };
 
 export async function fetchMealComments(mealId: string): Promise<MealCommentRow[]> {
@@ -62,4 +62,25 @@ export async function upsertMealComment(mealId: string, userId: string, body: st
     .upsert({ meal_id: mealId, user_id: userId, body, is_deleted: false }, { onConflict: 'meal_id,user_id' });
 
   if (error) throw error;
+}
+
+export type MealRatingSummary = {
+  meal_id: string;
+  avg_rating: number;
+  rating_count: number;
+};
+
+export async function fetchMealRatingSummary(mealId: string): Promise<MealRatingSummary | null> {
+  const { data, error } = await supabase
+    .from('meal_rating_summary')
+    .select('meal_id, avg_rating, rating_count')
+    .eq('meal_id', mealId)
+    .single();
+
+  if (error) {
+    // Return null if no ratings exist yet
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
+  return data as MealRatingSummary;
 }

@@ -103,6 +103,10 @@
       "loadDetails": "Failed to load recipe details."
     },
     "reviewsTitle": "Reviews ({{count}})",
+    "basedOnReviews": "Based on {{count}} review",
+    "basedOnReviews_other": "Based on {{count}} reviews",
+    "noReviewsYet": "No reviews yet",
+    "beTheFirstToReview": "Be the first to review this recipe!",
     "addReview": "Add a Review",
     "writeComment": "Write your comment...",
     "submitReview": "Submit Review",

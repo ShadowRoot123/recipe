@@ -1,40 +1,45 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type ForgotPasswordScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ForgotPassword'>;
 
-const LoginScreen = () => {
+const ForgotPasswordScreen = () => {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const { theme } = useTheme();
-    const navigation = useNavigation<LoginScreenNavigationProp>();
+    const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
     const { t } = useTranslation();
-    const { signIn } = useAuth();
+    const { resetPassword } = useAuth();
 
-    const handleLogin = async () => {
-        if (!email || !password) {
-            Alert.alert(t('common.error'), t('auth.login.missingFields'));
+    const handleResetPassword = async () => {
+        if (!email) {
+            Alert.alert(t('common.error'), 'Please enter your email address.');
+            return;
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert(t('common.error'), 'Please enter a valid email address.');
             return;
         }
 
         setLoading(true);
         try {
-            await signIn(email, password);
-            navigation.goBack();
+            await resetPassword(email);
+            Alert.alert(
+                'Check Your Email',
+                'Password reset instructions have been sent to your email address. Please check your inbox.',
+                [{ text: 'OK', onPress: () => navigation.goBack() }]
+            );
         } catch (error: any) {
-            if (error.code === 'auth/invalid-api-key') {
-                Alert.alert('Configuration Error', 'Firebase API Key is invalid. Please check firebaseConfig.ts');
-            } else {
-                Alert.alert(t('auth.login.errorTitle'), error.message);
-            }
+            Alert.alert(t('common.error'), error.message);
         } finally {
             setLoading(false);
         }
@@ -42,7 +47,15 @@ const LoginScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.title, { color: theme.colors.primary }]}>{t('auth.login.title')}</Text>
+            <Text style={[styles.title, { color: theme.colors.primary }]}>
+                {t('auth.forgotPassword.title', { defaultValue: 'Reset Password' })}
+            </Text>
+
+            <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
+                {t('auth.forgotPassword.description', {
+                    defaultValue: 'Enter your email address and we\'ll send you instructions to reset your password.'
+                })}
+            </Text>
 
             <View style={styles.inputContainer}>
                 <TextInput
@@ -58,39 +71,28 @@ const LoginScreen = () => {
                     autoCapitalize="none"
                     keyboardType="email-address"
                 />
-                <TextInput
-                    style={[styles.input, {
-                        backgroundColor: theme.colors.card,
-                        color: theme.colors.text,
-                        borderColor: theme.colors.border
-                    }]}
-                    placeholder={t('auth.login.passwordPlaceholder')}
-                    placeholderTextColor={theme.colors.textSecondary}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
             </View>
 
             <TouchableOpacity
                 style={[styles.button, { backgroundColor: theme.colors.primary }]}
-                onPress={handleLogin}
+                onPress={handleResetPassword}
                 disabled={loading}
             >
                 {loading ? (
                     <ActivityIndicator color="#FFF" />
                 ) : (
-                    <Text style={styles.buttonText}>{t('auth.login.button')}</Text>
+                    <Text style={styles.buttonText}>
+                        {t('auth.forgotPassword.button', { defaultValue: 'Send Reset Link' })}
+                    </Text>
                 )}
             </TouchableOpacity>
 
             <TouchableOpacity
-                style={styles.linkButton}
-                onPress={() => navigation.navigate('SignUp')}
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
             >
-                <Text style={[styles.linkText, { color: theme.colors.textSecondary }]}>
-                    {t('auth.login.noAccount')}{' '}
-                    <Text style={{ color: theme.colors.primary }}>{t('auth.login.signUp')}</Text>
+                <Text style={[styles.backText, { color: theme.colors.textSecondary }]}>
+                    {t('auth.forgotPassword.backToLogin', { defaultValue: 'Back to Login' })}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -106,8 +108,14 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        marginBottom: 40,
+        marginBottom: 16,
         textAlign: 'center',
+    },
+    description: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 32,
+        lineHeight: 22,
     },
     inputContainer: {
         marginBottom: 20,
@@ -117,7 +125,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 15,
-        marginBottom: 15,
         fontSize: 16,
     },
     button: {
@@ -132,12 +139,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    linkButton: {
+    backButton: {
         alignItems: 'center',
     },
-    linkText: {
+    backText: {
         fontSize: 16,
     },
 });
 
-export default LoginScreen;
+export default ForgotPasswordScreen;

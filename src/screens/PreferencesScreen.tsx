@@ -3,7 +3,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOp
 import { useTheme } from '../context/ThemeContext';
 import { usePreferences } from '../context/PreferencesContext';
 import { ALLERGENS, type AllergenId } from '../constants/allergens';
-import { getAllAreas, getAllIngredients, getRecipes } from '../services/api';
+import { getAllAreas, getAllIngredients, getRecipes } from '../services/supabaseRecipes';
 
 const normalize = (value: string) => value.trim().toLowerCase();
 

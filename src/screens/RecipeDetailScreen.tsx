@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet, Linking, TextInput, Alert, Modal, Vibration } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
-import { getRecipeById, Recipe } from '../services/api';
+import { getRecipeById } from '../services/supabaseRecipes';
+import type { Recipe } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { useRecipes } from '../context/RecipeContext';
 import { useAuth } from '../context/AuthContext';
 import { useReviews } from '../context/ReviewContext';
 import { useShoppingList } from '../context/ShoppingListContext';
+import { fetchMealRatingSummary, type MealRatingSummary } from '../services/supabaseReviews';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -36,6 +38,7 @@ const RecipeDetailScreen = () => {
     const [servingSize, setServingSize] = useState(1);
     const [isStepMode, setIsStepMode] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const [ratingSummary, setRatingSummary] = useState<MealRatingSummary | null>(null);
 
     // Timer State
     const [timeLeft, setTimeLeft] = useState(0);
@@ -50,6 +53,9 @@ const RecipeDetailScreen = () => {
 
     useEffect(() => {
         loadReviews(recipeId).catch(() => { });
+        fetchMealRatingSummary(recipeId)
+            .then(summary => setRatingSummary(summary))
+            .catch(() => { });
     }, [loadReviews, recipeId]);
 
     useEffect(() => {
@@ -109,6 +115,9 @@ const RecipeDetailScreen = () => {
             });
             setRating(0);
             setComment('');
+            // Refresh rating summary after adding review
+            const summary = await fetchMealRatingSummary(recipeId);
+            setRatingSummary(summary);
             Alert.alert(t('common.success'), t('details.alerts.reviewAddedMessage'));
         } catch {
             Alert.alert(t('common.error'), t('details.errors.loadDetails'));
@@ -207,7 +216,7 @@ const RecipeDetailScreen = () => {
         setTimeLeft(seconds);
         setTimerActive(true);
         if (timerRef.current) clearInterval(timerRef.current);
-        
+
         timerRef.current = setInterval(() => {
             setTimeLeft((prev) => {
                 if (prev <= 1) {
@@ -270,8 +279,8 @@ const RecipeDetailScreen = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <ScrollView 
-                style={styles.container} 
+            <ScrollView
+                style={styles.container}
                 contentContainerStyle={{ paddingBottom: 40 }}
             >
                 <Image source={{ uri: recipe.strMealThumb }} style={styles.image} cachePolicy="memory-disk" />
@@ -357,6 +366,41 @@ const RecipeDetailScreen = () => {
                     <View style={styles.divider} />
 
                     <Text style={[styles.subtitle, { color: theme.colors.primary, marginTop: 20 }]}>{t('details.reviewsTitle', { count: recipeReviews.length })}</Text>
+
+                    {ratingSummary ? (
+                        <View style={[styles.ratingSummaryCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+                            <View style={styles.ratingSummaryContent}>
+                                <View style={styles.averageRatingSection}>
+                                    <Text style={[styles.averageRatingNumber, { color: theme.colors.text }]}>
+                                        {ratingSummary.avg_rating.toFixed(1)}
+                                    </Text>
+                                    <View style={styles.averageStarsContainer}>
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <Ionicons
+                                                key={star}
+                                                name={star <= Math.round(ratingSummary.avg_rating) ? 'star' : star <= ratingSummary.avg_rating ? 'star-half' : 'star-outline'}
+                                                size={20}
+                                                color={theme.colors.accent}
+                                            />
+                                        ))}
+                                    </View>
+                                    <Text style={[styles.ratingCountText, { color: theme.colors.textSecondary }]}>
+                                        {t('details.basedOnReviews', { count: ratingSummary.rating_count })}
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                    ) : recipeReviews.length === 0 ? (
+                        <View style={[styles.emptyStateCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+                            <Ionicons name="star-outline" size={48} color={theme.colors.textSecondary} />
+                            <Text style={[styles.emptyStateText, { color: theme.colors.textSecondary }]}>
+                                {t('details.noReviewsYet')}
+                            </Text>
+                            <Text style={[styles.emptyStateSubtext, { color: theme.colors.textSecondary }]}>
+                                {t('details.beTheFirstToReview')}
+                            </Text>
+                        </View>
+                    ) : null}
 
                     {recipeReviews.map((review) => (
                         <View key={review.id} style={[styles.reviewCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
@@ -449,7 +493,7 @@ const RecipeDetailScreen = () => {
                                             <Text style={[styles.timerText, { color: theme.colors.primary }]}>
                                                 {formatTime(timeLeft)}
                                             </Text>
-                                            <TouchableOpacity 
+                                            <TouchableOpacity
                                                 style={[styles.timerButton, { backgroundColor: theme.colors.error }]}
                                                 onPress={stopTimer}
                                             >
@@ -458,7 +502,7 @@ const RecipeDetailScreen = () => {
                                             </TouchableOpacity>
                                         </View>
                                     ) : (
-                                        <TouchableOpacity 
+                                        <TouchableOpacity
                                             style={[styles.timerButton, { backgroundColor: theme.colors.primary }]}
                                             onPress={() => startTimer(stepTime)}
                                         >
@@ -666,6 +710,49 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    ratingSummaryCard: {
+        padding: 20,
+        borderRadius: 12,
+        borderWidth: 1,
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    ratingSummaryContent: {
+        alignItems: 'center',
+    },
+    averageRatingSection: {
+        alignItems: 'center',
+        gap: 8,
+    },
+    averageRatingNumber: {
+        fontSize: 48,
+        fontWeight: 'bold',
+    },
+    averageStarsContainer: {
+        flexDirection: 'row',
+        gap: 4,
+    },
+    ratingCountText: {
+        fontSize: 14,
+        marginTop: 4,
+    },
+    emptyStateCard: {
+        padding: 32,
+        borderRadius: 12,
+        borderWidth: 1,
+        marginBottom: 20,
+        alignItems: 'center',
+        gap: 12,
+    },
+    emptyStateText: {
+        fontSize: 16,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    emptyStateSubtext: {
+        fontSize: 14,
+        textAlign: 'center',
     },
     servingContainer: {
         flexDirection: 'row',

@@ -9,6 +9,8 @@ interface AuthContextType {
     signIn: (email: string, password: string) => Promise<void>;
     signUp: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
+    resetPassword: (email: string) => Promise<void>;
+    updatePassword: (newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -18,6 +20,8 @@ const AuthContext = createContext<AuthContextType>({
     signIn: async () => { },
     signUp: async () => { },
     signOut: async () => { },
+    resetPassword: async () => { },
+    updatePassword: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -62,22 +66,72 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, []);
 
     const value = useMemo<AuthContextType>(() => {
+        // Helper function to convert Supabase errors to user-friendly messages
+        const getAuthErrorMessage = (error: any): string => {
+            const message = error?.message?.toLowerCase() || '';
+
+            if (message.includes('invalid login credentials')) {
+                return 'Invalid email or password. Please try again.';
+            }
+            if (message.includes('email not confirmed')) {
+                return 'Please confirm your email address before logging in.';
+            }
+            if (message.includes('user already registered')) {
+                return 'An account with this email already exists.';
+            }
+            if (message.includes('password should be at least')) {
+                return 'Password must be at least 6 characters long.';
+            }
+            if (message.includes('invalid email')) {
+                return 'Please enter a valid email address.';
+            }
+
+            return error?.message || 'An error occurred. Please try again.';
+        };
+
         const signIn = async (email: string, password: string) => {
             const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
+            if (error) {
+                const userFriendlyError = new Error(getAuthErrorMessage(error));
+                throw userFriendlyError;
+            }
         };
 
         const signUp = async (email: string, password: string) => {
             const { error } = await supabase.auth.signUp({ email, password });
-            if (error) throw error;
+            if (error) {
+                const userFriendlyError = new Error(getAuthErrorMessage(error));
+                throw userFriendlyError;
+            }
         };
 
         const signOut = async () => {
             const { error } = await supabase.auth.signOut();
-            if (error) throw error;
+            if (error) {
+                const userFriendlyError = new Error(getAuthErrorMessage(error));
+                throw userFriendlyError;
+            }
         };
 
-        return { user, session, loading, signIn, signUp, signOut };
+        const resetPassword = async (email: string) => {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: 'myapp://reset-password', // You can customize this URL
+            });
+            if (error) {
+                const userFriendlyError = new Error(getAuthErrorMessage(error));
+                throw userFriendlyError;
+            }
+        };
+
+        const updatePassword = async (newPassword: string) => {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+                const userFriendlyError = new Error(getAuthErrorMessage(error));
+                throw userFriendlyError;
+            }
+        };
+
+        return { user, session, loading, signIn, signUp, signOut, resetPassword, updatePassword };
     }, [user, session, loading]);
 
     return (

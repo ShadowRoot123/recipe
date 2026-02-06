@@ -6,5 +6,8 @@
     "types": [
       "jest"
     ]
-  }
+  },
+  "exclude": [
+    "src/components/__tests__/**"
+  ]
 }

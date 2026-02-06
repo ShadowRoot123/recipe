@@ -11,8 +11,9 @@ import FavoritesScreen from '../screens/FavoritesScreen';
 import ShoppingListScreen from '../screens/ShoppingListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
-import LoginScreen from '../screens/LoginScreen';
-import SignUpScreen from '../screens/SignUpScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import SignUpScreen from '../screens/auth/SignUpScreen';
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 import { useTheme } from '../context/ThemeContext';
 import BootScreen from '../screens/BootScreen';
 import PreferencesScreen from '../screens/PreferencesScreen';
@@ -29,6 +30,7 @@ export type RootStackParamList = {
     Preferences: undefined;
     Login: undefined;
     SignUp: undefined;
+    ForgotPassword: undefined;
 };
 
 export type OnboardingStackParamList = {
@@ -177,6 +179,11 @@ const AppNavigator = () => {
                 <Stack.Screen
                     name="SignUp"
                     component={SignUpScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ForgotPassword"
+                    component={ForgotPasswordScreen}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
